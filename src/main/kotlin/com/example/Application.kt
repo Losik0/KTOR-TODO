@@ -36,7 +36,5 @@ fun Application.module() {
         filter { call -> call.request.path().startsWith("/") }
     }
 
-    val todoService: TodoService = TodoServiceImpl(db)
-    todoService.init()
-    registerTodoRoutes(todoService)
+    registerTodoRoutes(TodoServiceImpl(db))
 }

@@ -9,9 +9,11 @@ import io.ktor.response.*
 
 fun Route.todoRouting(service: TodoService) {
     route("/todo") {
+
         get {
             call.respond(service.getAllTodo())
         }
+
         get("{id}") {
             val id = call.parameters["id"]?: return@get call.respondText(
                 "Missing id", status=HttpStatusCode.BadRequest
@@ -21,6 +23,7 @@ fun Route.todoRouting(service: TodoService) {
             )
             call.respond(todo)
         }
+
         post {
             val parameters = call.receiveParameters()
             val todo = service.createTodo(parameters["contents"].toString()) ?: return@post call.respondText(
@@ -28,29 +31,35 @@ fun Route.todoRouting(service: TodoService) {
             )
             call.respond(todo)
         }
+
         delete("{id}") {
             val id = call.parameters["id"]?: return@delete call.respond(HttpStatusCode.BadRequest)
             service.deleteTodo(id.toInt())
             call.respondText("Todo Deleted", status=HttpStatusCode.Accepted)
         }
+
     }
 }
 
 fun Route.todoCompletedRouting(service: TodoService){
     route("/completed") {
+
         put("{id}") {
             val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             service.completeTodo(id.toInt())
             call.respondText("Todo finished", status = HttpStatusCode.Accepted)
         }
+
         get {
             call.respond(service.getTodoListByOption(true))
         }
+
         delete {
             service.deleteAllCompletedTodo()
             call.respondText("Completed Todo Deleted", status = HttpStatusCode.Accepted)
         }
     }
+
     route("/active"){
         get {
             call.respond(service.getTodoListByOption(false))
@@ -59,6 +68,7 @@ fun Route.todoCompletedRouting(service: TodoService){
 }
 
 fun Application.registerTodoRoutes(services: TodoService){
+    services.init()
     routing{
         todoRouting(services)
         todoCompletedRouting(services)
