@@ -1,10 +1,3 @@
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
-val exposed_version: String by project
-val h2_version: String by project
-val hikariCp_version: String by project
-
 plugins {
     application
     kotlin("jvm") version "1.6.10"
@@ -24,18 +17,25 @@ repositories {
     maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
+fun versionOf(name: String): String {
+    return project.property("version.$name") as String
+}
+
 dependencies {
-    implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-serialization:$ktor_version")
-    implementation("io.ktor:ktor-html-builder:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor:ktor-server-core:${versionOf("ktor")}")
+    implementation("io.ktor:ktor-serialization:${versionOf("ktor")}")
+    implementation("io.ktor:ktor-html-builder:${versionOf("ktor")}")
+    implementation("io.ktor:ktor-server-netty:${versionOf("ktor")}")
+    implementation("ch.qos.logback:logback-classic:${versionOf("logback")}")
 
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-tests:${versionOf("ktor")}")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${versionOf("kotlin")}")
 
-    implementation("com.h2database:h2:$h2_version")
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("com.zaxxer:HikariCP:$hikariCp_version")
+    implementation("com.h2database:h2:${versionOf("h2")}")
+    implementation("org.jetbrains.exposed:exposed-core:${versionOf("exposed")}")
+    implementation("org.jetbrains.exposed:exposed-jdbc:${versionOf("exposed")}")
+    implementation("com.zaxxer:HikariCP:${versionOf("hikariCp")}")
+
+    implementation("org.kodein.di:kodein-di:${versionOf("kodein")}")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:${versionOf("kodein")}")
 }

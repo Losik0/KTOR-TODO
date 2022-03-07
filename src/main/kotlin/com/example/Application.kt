@@ -1,14 +1,18 @@
 package com.example
 
+import com.example.database.dataSource
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.serialization.*
 import com.example.routes.registerTodoRoutes
-import com.example.services.TodoService
 import com.example.services.TodoServiceImpl
+import com.example.services.todoServices
 import com.typesafe.config.ConfigFactory
 import io.ktor.request.*
 import org.jetbrains.exposed.sql.Database
+import org.kodein.di.bind
+import org.kodein.di.ktor.di
+import org.kodein.di.singleton
 import org.slf4j.event.Level
 
 /*
@@ -24,10 +28,16 @@ fun main() {
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
-    val config = ConfigFactory.load("application.conf")
-    val dbUrl = config.getString("database.local.url")
-    val dbDriver = config.getString("database.local.driver")
-    val db = Database.connect(url=dbUrl, driver=dbDriver)
+    di {
+        bind {
+            singleton {
+                environment.config
+            }
+        }
+
+        importOnce(dataSource)
+        importOnce(todoServices)
+    }
 
     install(ContentNegotiation){ json()}
 
@@ -36,5 +46,5 @@ fun Application.module() {
         filter { call -> call.request.path().startsWith("/") }
     }
 
-    registerTodoRoutes(TodoServiceImpl(db))
+    registerTodoRoutes()
 }

@@ -4,6 +4,11 @@ import com.example.database.TodoTable
 import com.example.models.TodoBody
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.singleton
+import java.util.*
 
 class TodoServiceImpl(val db: Database): TodoService {
 
@@ -71,6 +76,14 @@ class TodoServiceImpl(val db: Database): TodoService {
     override fun getTodoListByOption(is_finished: Boolean): List<TodoBody> = transaction(db) {
         TodoTable.select{TodoTable.is_finished eq is_finished}.map {
             TodoBody(it[TodoTable.id].value, it[TodoTable.contents], it[TodoTable.is_finished])
+        }
+    }
+
+    companion object {
+        val module = DI.Module(TodoService::class.simpleName!!) {
+            bind<TodoService>() with singleton {
+                TodoServiceImpl(instance())
+            }
         }
     }
 

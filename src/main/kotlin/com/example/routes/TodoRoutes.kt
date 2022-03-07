@@ -1,13 +1,17 @@
 package com.example.routes
 
 import com.example.services.TodoService
+import com.example.services.TodoServiceImpl
 import io.ktor.routing.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 fun Route.todoRouting(service: TodoService) {
+
     route("/todo") {
 
         get {
@@ -67,7 +71,8 @@ fun Route.todoCompletedRouting(service: TodoService){
     }
 }
 
-fun Application.registerTodoRoutes(services: TodoService){
+fun Application.registerTodoRoutes(){
+    val services by closestDI().instance<TodoService>()
     services.init()
     routing{
         todoRouting(services)
