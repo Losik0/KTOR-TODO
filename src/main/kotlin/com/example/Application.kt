@@ -1,31 +1,22 @@
 package com.example
 
 import com.example.database.dataSource
+import com.example.plugins.ItemNotFoundException
 import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.serialization.*
 import com.example.routes.registerTodoRoutes
-import com.example.services.TodoServiceImpl
 import com.example.services.todoServices
-import com.typesafe.config.ConfigFactory
+import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.request.*
-import org.jetbrains.exposed.sql.Database
+import io.ktor.response.*
+import io.ktor.server.netty.*
 import org.kodein.di.bind
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import org.slf4j.event.Level
 
-/*
-fun main() {
-    embeddedServer(Netty, port = 8000, host = "localhost") {
-        configureRouting()
-        configureSerialization()
-        registerTodoRoutes()
-    }.start(wait = true)
-}
- */
-
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>): Unit = EngineMain.main(args)
 
 fun Application.module() {
     di {
@@ -46,5 +37,15 @@ fun Application.module() {
         filter { call -> call.request.path().startsWith("/") }
     }
 
+    install(StatusPages){
+        exception<ItemNotFoundException> {
+            call.respond(HttpStatusCode.NotFound, "존재하지 않는 항목 입니다.")
+        }
+        
+        exception<Throwable> {
+            call.respond(HttpStatusCode.InternalServerError, "오류 발생...")
+        }
+
+    }
     registerTodoRoutes()
 }

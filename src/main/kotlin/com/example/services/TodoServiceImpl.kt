@@ -1,5 +1,6 @@
 package com.example.services
 
+import arrow.core.*
 import com.example.database.TodoTable
 import com.example.models.TodoBody
 import org.jetbrains.exposed.sql.*
@@ -8,7 +9,7 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
-import java.util.*
+import com.example.plugins.ItemNotFoundException
 
 class TodoServiceImpl(val db: Database): TodoService {
 
@@ -60,18 +61,26 @@ class TodoServiceImpl(val db: Database): TodoService {
         }
     }
 
-    override fun getTodo(id: Int): TodoBody? = transaction(db) {
+    override fun getTodo(id: Int): TodoBody = transaction(db) {
         TodoTable.select{TodoTable.id eq id}.map{
             TodoBody(it[TodoTable.id].value, it[TodoTable.contents], it[TodoTable.is_finished])
-        }.singleOrNull()
+        }.firstOrNone().getOrElse {
+            throw ItemNotFoundException("")
+        }
     }
 
     override fun getAllTodo(): List<TodoBody> = transaction(db) {
-        TodoTable.selectAll().map {
-            TodoBody(it[TodoTable.id].value, it[TodoTable.contents], it[TodoTable.is_finished]
-            )
+        with(TodoTable) {
+            selectAll().map{
+                TodoBody(it[TodoTable.id].value, it[TodoTable.contents], it[TodoTable.is_finished])
+            }
         }
-    }
+    }/*.toEither {
+        ItemNotFoundException("")
+    }.getOrHandle {
+        throw it
+    }*/
+
 
     override fun getTodoListByOption(is_finished: Boolean): List<TodoBody> = transaction(db) {
         TodoTable.select{TodoTable.is_finished eq is_finished}.map {

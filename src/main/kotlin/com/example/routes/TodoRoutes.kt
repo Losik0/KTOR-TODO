@@ -25,6 +25,7 @@ fun Route.todoRouting(service: TodoService) {
             val todo = service.getTodo(id.toInt())?: return@get call.respondText(
                     "No todo item with id $id", status=HttpStatusCode.NotFound
             )
+
             call.respond(todo)
         }
 

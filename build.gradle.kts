@@ -15,6 +15,8 @@ repositories {
     //mavenLocal()
     maven { url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers") }
     maven { url = uri("https://kotlin.bintray.com/ktor") }
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
 }
 
 fun versionOf(name: String): String {
@@ -24,8 +26,11 @@ fun versionOf(name: String): String {
 dependencies {
     implementation("io.ktor:ktor-server-core:${versionOf("ktor")}")
     implementation("io.ktor:ktor-serialization:${versionOf("ktor")}")
-    implementation("io.ktor:ktor-html-builder:${versionOf("ktor")}")
+    //implementation("io.ktor:ktor-html-builder:${versionOf("ktor")}")
     implementation("io.ktor:ktor-server-netty:${versionOf("ktor")}")
+    implementation("io.ktor:ktor-server-servlet:${versionOf("ktor")}")
+    //implementation("io.ktor:ktor-server-status-pages:${versionOf("ktor")}")
+
     implementation("ch.qos.logback:logback-classic:${versionOf("logback")}")
 
     testImplementation("io.ktor:ktor-server-tests:${versionOf("ktor")}")
@@ -38,4 +43,6 @@ dependencies {
 
     implementation("org.kodein.di:kodein-di:${versionOf("kodein")}")
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:${versionOf("kodein")}")
+
+    implementation("io.arrow-kt:arrow-optics:${versionOf("arrow")}")
 }

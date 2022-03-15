@@ -8,13 +8,14 @@ import org.kodein.di.singleton
 
 val dataSource = DI.Module("Database"){
     bind<Database>() with singleton {
-        createDatabase()
+        connectDatabase()
     }
 }
 
-fun createDatabase(): Database {
+fun connectDatabase(): Database {
     val dbConfig = ConfigFactory.load("application.conf").getConfig("database")
     val url = dbConfig.getString("local.url")
     val driver = dbConfig.getString("local.driver")
     return Database.connect(url=url, driver=driver)
 }
+
